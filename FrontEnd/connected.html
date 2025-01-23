@@ -7,21 +7,28 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 	<meta name="description" content="">
 	<link rel="stylesheet" href="./assets/style.css">
-	<script src="javascript/main.js"></script>
+	<script src="javascript/modal.js" type="module" defer></script>
 </head>
 <body>
 <header>
-	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
-	<nav>
-		<ul>
-			<li><a href="#portfolio">projets</a></li>
-			<li><a href="#contact">contact</a></li>
-			<li><a href="index.html">logout</a></li>
-			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
-		</ul>
-	</nav>
+	<div class="edition-mode">
+		<i class="fa-regular fa-pen-to-square"></i>
+		<p>Mode édition</p>
+	</div>
+	<div class="navigation">
+		<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
+		<nav>
+			<ul>
+				<li><a href="#portfolio">projets</a></li>
+				<li><a href="#contact">contact</a></li>
+				<li><a href="index.html">logout</a></li>
+				<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
+			</ul>
+		</nav>
+	</div>
 </header>
 <main>
 	<section id="introduction">
@@ -36,9 +43,23 @@
 		</article>
 	</section>
 	<section id="portfolio">
-		<h2>Mes Projets</h2>
-		<div class="div-filters">
-		</div>
+		<div class="works-edit">
+			<h2>Mes Projets</h2>
+			<a href="#modal" class="edit">
+				<i class="fa-regular fa-pen-to-square"></i>
+				<p>modifier</p>
+			</a>
+		</div>	
+		<aside id="modal" class="invisible" aria-hidden="true" aria-labelledby="#title-modal">
+			<div class="modal-box">
+				<div class="cross">
+					<i class="fa-solid fa-xmark close-modal"></i>
+				</div>
+				<h3 id="title-modal">Galerie Photo</h3>
+				<div class="works-modal"></div>
+				<button class="button-add">Ajouter une photo</button>
+			</div>
+		</aside>
 		<div class="gallery">
 		</div>
 	</section>
