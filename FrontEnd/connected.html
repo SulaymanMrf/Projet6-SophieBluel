@@ -60,6 +60,27 @@
 				<button class="button-add">Ajouter une photo</button>
 			</div>
 		</aside>
+		<aside id="modal2" class="invisible" aria-hidden="true" aria-labelledby="#title-modal2">
+			<div class="modal-box">
+				<div class="nav-modal2">
+					<i class="fa-solid fa-arrow-left back"></i>
+					<i class="fa-solid fa-xmark close-modal"></i>
+				</div>
+				<h3 id="title-modal">Ajout Photo</h3>
+				<form class="add-works">
+					<div class="add-image">
+						<i class="fa-regular fa-image"></i>
+						<button>+ Ajouter photo</button>
+						<span>jpg, png: 4mo max</span>
+					</div>
+					<label for="title">Titre </label>
+					<input type="text" name="title" id="title" required/> 
+					<label for="categories">Catégories </label>
+					<select id="categories" required> </select>
+				</form>
+				<button class="button-valid">Valider</button>
+			</div>
+		</aside>
 		<div class="gallery">
 		</div>
 	</section>
