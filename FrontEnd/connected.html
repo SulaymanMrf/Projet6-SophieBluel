@@ -57,28 +57,32 @@
 				</div>
 				<h3 id="title-modal">Galerie Photo</h3>
 				<div class="works-modal"></div>
-				<button class="button-add">Ajouter une photo</button>
+				<button class="button-add buttons">Ajouter une photo</button>
 			</div>
 		</aside>
 		<aside id="modal2" class="invisible" aria-hidden="true" aria-labelledby="#title-modal2">
 			<div class="modal-box">
 				<div class="nav-modal2">
 					<i class="fa-solid fa-arrow-left back"></i>
-					<i class="fa-solid fa-xmark close-modal"></i>
+					<i class="fa-solid fa-xmark close-modal2"></i>
 				</div>
 				<h3 id="title-modal">Ajout Photo</h3>
 				<form class="add-works">
 					<div class="add-image">
 						<i class="fa-regular fa-image"></i>
-						<button>+ Ajouter photo</button>
+						<div class="button-file">
+							<input type="file" id="fileInput" accept="image/*" style="display: none;" class="listener-color">
+							<button class="upload-btn"> +Ajouter Photo </button>
+						</div>
 						<span>jpg, png: 4mo max</span>
 					</div>
+					<div class="image-loaded invisible" aria-hidden="true"></div>
 					<label for="title">Titre </label>
-					<input type="text" name="title" id="title" required/> 
+					<input type="text" name="title" id="title" class="listener-color"/> 
 					<label for="categories">Catégories </label>
-					<select id="categories" required> </select>
+					<select id="categories" class="listener-color"> </select>
 				</form>
-				<button class="button-valid">Valider</button>
+				<button class="button-valid button-color buttons">Valider</button>
 			</div>
 		</aside>
 		<div class="gallery">

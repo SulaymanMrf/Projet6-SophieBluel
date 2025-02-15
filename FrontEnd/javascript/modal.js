@@ -96,7 +96,7 @@ function modalAdd(event) {
     modal2.setAttribute('aria-modal', 'true');
 
     modal2.addEventListener("click", closeModal2);
-    document.querySelector(".close-modal").addEventListener("click", closeModal2);
+    document.querySelector(".close-modal2").addEventListener("click", closeModal2);
 
     attachStopPropagation(modal2);
 };
@@ -113,7 +113,7 @@ function closeModal2(event) {
     modal2.removeAttribute('aria-modal');
 
     modal2.removeEventListener("click", closeModal2);
-    document.querySelector(".close-modal").removeEventListener("click", closeModal2);
+    document.querySelector(".close-modal2").removeEventListener("click", closeModal2);
 
     modal2 = null;
 };
@@ -148,18 +148,18 @@ function setModal(data) {
 //Fonction suppression de projets
 async function deleteWorks(element) {
     const id = element.target.id.replace("trash", "");
-    let DeleteApi ='http://localhost:5678/api/works/';
+    let url =`http://localhost:5678/api/works/${id}`;
     const token = sessionStorage.token;
 
     //Appel à l'API
-    const response = await fetch(DeleteApi + id, {
+    const response = await fetch(url, {
         method : 'DELETE',
         headers : {
             'Authorization': `Bearer ${token}`,
         }
     });
 
-    if (response.status === 401 || response.status === 500) {
+    if (response.status >= 300) {
         console.log('Erreur lors de la suppression');
         return;
     }else {
@@ -167,42 +167,166 @@ async function deleteWorks(element) {
     }
 };
 
-//Fonction ajout de projets
-// async function addWorks(element) {
-//     element.preventDefault();
+const uploadBtn = document.querySelector('.upload-btn');
+const fileInput = document.getElementById('fileInput');
+const addImageDiv = document.querySelector(".add-image");
 
-//     let imageValue = document.querySelector('.');
-//     let titleValue = document.getElementById('title');
-//     let categoryValue = document.getElementById('categories');
+//Event affichage image modale ajout de photo
+let selectedFile = null; 
 
-//     let work = {
-//         image : "",
-//         title : titleValue,
-//         category : CategoryValue
-//     };
+document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById("fileInput");
+    const imageLoaded = document.querySelector(".image-loaded");
+    const addImageDiv = document.querySelector(".add-image");
 
-//     let AddApi = 'http://localhost:5678/api/works/';
+    fileInput.addEventListener("change", function (event) {
+        selectedFile = event.target.files[0]; // Stocke le fichier globalement
 
-//     //Appel API
-//     const response = await fetch(AddApi {
-//         method : 'POST',
-//         headers : {
-//              "Content-Type": 'application/json' 
-//           }
-//         body : JSON.stringify(work)
-//     })
-// }
+        if (selectedFile && selectedFile.type.startsWith("image/")) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                console.log("Image en binaire:", e.target.result); // Affiche les données binaires
+                
+                // Ajout de l'image dans l'interface
+                let existingImg = imageLoaded.querySelector("img");
+                if (!existingImg) {
+                    existingImg = document.createElement("img");
+                    imageLoaded.appendChild(existingImg);
+                }
+                existingImg.src = URL.createObjectURL(selectedFile); // Affiche l'image
+            };
+
+            addImageDiv.classList.add('invisible');
+            imageLoaded.classList.remove("invisible");
+
+            reader.readAsArrayBuffer(selectedFile); // Convertit en binaire
+        }
+    });
+});
+
+
+//Bloque la propagation du clic
+fileInput.addEventListener('click', function(event) {
+    event.stopPropagation(); 
+});
+
+
+//Event click sur le boutton
+uploadBtn.addEventListener('click', function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    fileInput.click();
+});
 
 //Catégories select
-
-async function selectCategories() {
-    let InputCategory = document.getElementById('categories');
-    let ResponseCategoriesApi = await fetch(['http://localhost:5678/api/categories']);
+let ResponseCategoriesApi = await fetch(['http://localhost:5678/api/categories']);
     let CategoriesApi = await ResponseCategoriesApi.json();
-    console.log(CategoriesApi);
 
+async function selectCategories(data) {
+    let InputCategory = document.getElementById('categories');
     InputCategory.innerHTML = "";
     
+    const empty = document.createElement("option");
+    empty.innerHTML = "";
+    InputCategory.append(empty);
+
+    for (let i = 0; i < data.length; i++) {
+        let Categories = document.createElement("option");
+        Categories.innerHTML = `${data[i].name}`;
+        InputCategory.append(Categories);
+    }
+};
+
+selectCategories(CategoriesApi);
+
+function getCategoryId(category) {
+    if (category === 'Objets') return 1
+    if (category === 'Appartements') return 2
+    if (category === 'Hotels & restaurants') return 3
+    return 0
 }
 
-selectCategories();
+//Fonction ajout de projets
+async function addWorks(event) {
+    event.preventDefault();
+
+    const AddApi = 'http://localhost:5678/api/works';
+    const titleValue = document.getElementById('title').value;
+    const categoryValue = document.getElementById('categories').value;
+    const token = sessionStorage.getItem("token");
+    
+
+    if (!selectedFile || !titleValue || !categoryValue) {
+        console.log('Il manque des éléments pour ajouter un projet');
+        return;
+    }
+
+
+    const formData = new FormData();
+    formData.append('image', selectedFile); 
+    formData.append('title', titleValue);
+    formData.append('category', getCategoryId(categoryValue));
+
+    try {
+        const response = await fetch(AddApi, {
+            method: 'POST',
+            headers: {
+                "Authorization": `Bearer ${token}` 
+            },
+            body: formData
+        });
+
+        if (response.status >= 300) {
+            console.log("Erreur lors de l'ajout:", response.statusText);
+        } else {
+            console.log("Projet ajouté avec succès !");
+            getWorks();     
+            cleanValues();
+        }
+    } catch (error) {
+        console.error("Erreur réseau :", error);
+    }
+};
+
+document.querySelector(".button-valid").addEventListener('click', addWorks);
+
+function cleanValues() {
+    selectedFile = null;
+    fileInput.value = ""; 
+    titleInput.value = ""; 
+    categorySelect.value = ""; 
+
+    document.querySelector(".image-loaded").classList.add("invisible"); // Cacher l'aperçu de l'image
+    document.querySelector(".add-image").classList.remove("invisible"); // Réafficher l'ajout d'image
+    document.querySelector(".image-loaded").innerHTML = ""; 
+
+    updateButtonState();
+}
+
+
+// Sélection des éléments
+const titleInput = document.getElementById("title");
+const categorySelect = document.getElementById("categories");
+const validateButton = document.querySelector(".button-valid");
+
+// Fonction pour vérifier si tous les champs sont remplis
+function updateButtonState() {
+    const selectedFile = fileInput.files.length > 0;
+    const titleValue = titleInput.value.trim(); // Trim pour éviter les espaces vides
+    const categoryValue = categorySelect.value;
+
+    if (selectedFile && titleValue && categoryValue) {
+        validateButton.classList.remove("button-color"); 
+    } else {
+        validateButton.classList.add("button-color"); 
+    }
+}
+
+// Ajout des écouteurs d'événements
+fileInput.addEventListener("change", updateButtonState);
+titleInput.addEventListener("input", updateButtonState);
+categorySelect.addEventListener("change", updateButtonState);
+
+// Vérification initiale au cas où des valeurs sont déjà présentes
+updateButtonState();
